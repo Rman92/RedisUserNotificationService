@@ -16,7 +16,13 @@ import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
 import org.springframework.data.redis.serializer.GenericToStringSerializer;
-
+/**
+ * Configuration class which initializes redis database and Redis pubSub
+ * connections using redis configs from {@literal application.properties}
+ * and env for password
+ *
+ * @author Rushabh Khandare
+ */
 @Log4j2
 @Configuration
 public class RedisAppConfig {
@@ -35,6 +41,12 @@ public class RedisAppConfig {
 
     @Value("${REDIS_DB}")
     private String redisDB;
+
+    /**
+     * Bean to instantiate {@link RedisTemplate}
+     *
+     * @return redisTemplate RedisTemplate
+     */
     @Bean
     @ConditionalOnMissingBean(name = "redisTemplate")
     public RedisTemplate<String, Object> redisTemplate() {
@@ -45,11 +57,21 @@ public class RedisAppConfig {
         return template;
     }
 
+    /**
+     * Bean to instantiate {@link RedisMessageSubscriber}
+     *
+     * @return messageListenerAdapter MessageListenerAdapter
+     */
     @Bean
     MessageListenerAdapter messageListener() {
         return new MessageListenerAdapter(new RedisMessageSubscriber());
     }
 
+    /**
+     * Bean to instantiate {@link RedisMessageListenerContainer}
+     *
+     * @return container RedisMessageListenerContainer
+     */
     @Bean
     RedisMessageListenerContainer redisContainer() {
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
@@ -58,11 +80,21 @@ public class RedisAppConfig {
         return container;
     }
 
+    /**
+     * Bean to instantiate {@link ChannelTopic} using topic name USEREVENTS
+     *
+     * @return container ChannelTopic
+     */
     @Bean
     ChannelTopic topic() {
-        return new ChannelTopic("MESSAGES");
+        return new ChannelTopic("USEREVENTS");
     }
 
+    /**
+     * Bean to instantiate {@link RedisConnectionFactory}
+     *
+     * @return lettuceConnectionFactory LettuceConnectionFactory
+     */
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
         // Read environment variables
@@ -82,10 +114,15 @@ public class RedisAppConfig {
 
         RedisStandaloneConfiguration config = new RedisStandaloneConfiguration(host, Integer.parseInt(port));
 
+        if(redisPassword == null || redisPassword.isEmpty()) {
+            redisPassword = System.getenv("REDIS_PASSWORD");
+        }
         log.info("Connecting to %s:%s with password: %s%n", host, port, redisPassword);
 
         if (redisPassword != null) {
             config.setPassword(redisPassword);
+        } else {
+            log.error("Incorrect redis password.");
         }
         return new LettuceConnectionFactory(config);
     }

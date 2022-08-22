@@ -1,5 +1,9 @@
 package com.redis.usernotifyservice.model;
-
+/**
+ * Model class which represents Notification event
+ *
+ * @author Rushabh Khandare
+ */
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;

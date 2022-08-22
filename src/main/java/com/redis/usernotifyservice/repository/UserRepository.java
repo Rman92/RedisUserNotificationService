@@ -4,6 +4,11 @@ import com.redis.usernotifyservice.model.User;
 
 import java.util.Map;
 
+/**
+ * Interface which defines methods to perform operations on database
+ *
+ * @author Rushabh Khandare
+ */
 public interface UserRepository{
     /**
      * Return all users

@@ -14,6 +14,12 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.cache.annotation.Cacheable;
 
+/**
+ * Service class which performs db operations on user {@link User}
+ * request and publish the {@link UserEvent} to Redis pubSub USEREVENTS queue
+ *
+ * @author Rushabh Khandare
+ */
 @Service
 @Log4j2
 @NoArgsConstructor
@@ -28,6 +34,12 @@ public class UserService {
     ObjectMapper objectMapper = new ObjectMapper();
     private UserEvent userEvent;
 
+    /**
+     * Service Method to fetch user details
+     *
+     * @param id User ID
+     * @return User
+     */
     //@Cacheable(value = "userCache")
     public User getUserForId(String id) {
         log.info("Fetching user details by id {}",id);
@@ -35,6 +47,12 @@ public class UserService {
         return user;
     }
 
+    /**
+     * Service Method to add user details and publish CREATE {@link EventType}
+     *
+     * @param user User
+     * @return User
+     */
     public User addUser(User user) throws JsonProcessingException {
         log.info("Adding new user details to db : {}",user.toString());
         publishUserEvent(user.getUserId(),EventType.CREATE);
@@ -42,6 +60,13 @@ public class UserService {
         return user;
     }
 
+    /**
+     * Service Method to update user details and publish Activate/Deactivate {@link EventType}
+     *
+     * @param id User ID
+     * @param activate true/false value to activate/deactivate user
+     * @return User updated user details
+     */
     public User updateUserStatus(String id, boolean activate) throws JsonProcessingException {
         User user = getUserForId(id);
         user.setActive(activate);
@@ -55,12 +80,25 @@ public class UserService {
         return user;
     }
 
+    /**
+     * Service Method to delete user details and publish Delete {@link EventType}
+     *
+     * @param id User ID
+     * @return User updated user details
+     */
     public void deleteUser(String id) throws JsonProcessingException {
       userRepository.delete(id);
         log.info("Deleting new user details to db : {}",id);
         publishUserEvent(id,EventType.DELETE);
     }
 
+    /**
+     * Helper method to publish {@link UserEvent}
+     *
+     * @param id User ID
+     * @param eventType User activity event type
+     * @throws JsonProcessingException
+     */
     private void publishUserEvent(String id,EventType eventType) throws JsonProcessingException {
         userEvent = new UserEvent(id, eventType);
         redisMessagePublisher.publish(userEvent);

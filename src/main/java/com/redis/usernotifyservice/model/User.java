@@ -1,5 +1,9 @@
 package com.redis.usernotifyservice.model;
-
+/**
+ * User class which represents User entity
+ *
+ * @author Rushabh Khandare
+ */
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
