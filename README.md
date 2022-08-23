@@ -2,7 +2,7 @@
 
 Showcases how to implement chat app with ASP.NET Core, SignalR and Redis. This example uses the [pub/sub](https://redis.io/topics/pubsub) feature combined with Websockets from [SignalR](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/websockets?view=aspnetcore-5.0#signalr) for implementing the message communication between client and server.
 
-<a href="https://github.com/Rman92/redis-usernotifyservice/blob/main/Arch-Redis-User-Notification-Service.png"><img src="https://github.com/Rman92/redis-usernotifyservice/blob/main/Arch-Redis-User-Notification-Service.png" width="49%"></a>
+<a href="https://github.com/Rman92/redis-usernotifyservice/blob/main/Arch-Redis-User-Notification-Service.png"><img src="https://github.com/Rman92/redis-usernotifyservice/blob/main/Arch-Redis-User-Notification-Service.png" width="100%"></a>
 
 ## Overview video
 
