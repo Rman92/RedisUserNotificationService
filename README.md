@@ -1,4 +1,4 @@
-# Basic Redis Chat App Demo C# (.Net Core 5)
+# Redis - User Activity Notification Service (Java 11)
 
 Showcases how to implement chat app with ASP.NET Core, SignalR and Redis. This example uses the [pub/sub](https://redis.io/topics/pubsub) feature combined with Websockets from [SignalR](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/websockets?view=aspnetcore-5.0#signalr) for implementing the message communication between client and server.
 
@@ -13,8 +13,7 @@ Here's a short video that explains the project and how it uses Redis:
 
 ## Technical Stack
 
-- Frontend - _React_, _Socket_ (@microsoft/signalr)
-- Backend - _.Net Core 5.0_, _Redis_ (Microsoft.Extensions.Caching.StackExchangeRedis)
+- Backend - _Java 11,_Spring Boot_, _Redis Database_, _Redis PubSub_
 
 ## How it works?
 
