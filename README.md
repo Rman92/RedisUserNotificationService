@@ -13,7 +13,7 @@ Here's a short video that explains the project and how it uses Redis:
 
 ## Technical Stack
 
-- Backend - _Java 11,_Spring Boot_, _Redis Database_, _Redis PubSub_
+- Backend - _Java 11_,_Spring Boot_, _Redis Database_, _Redis PubSub_, _RedisHashOperations_
 
 ## How it works?
 
