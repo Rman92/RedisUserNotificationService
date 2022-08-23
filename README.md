@@ -20,34 +20,19 @@ Here's a short video that explains the project and how it uses Redis:
 
 #### User
 
-```csharp
-public class User : BaseEntity
-{
-  public int Id { get; set; }
-  public string Username { get; set; }
-  public bool Online { get; set; } = false;
-}
-```
+```java
+public class User implements Serializable {
+    private String userId;
+    private String userName;
+    private String userEmail;
+    private String userContactNumber;
+    private String userAddress;
+    private boolean isActive;
+    private Gender gender;
+    public enum Gender {
+        MALE, FEMALE
+    }
 
-#### ChatRoom
-
-```csharp
-public class ChatRoom : BaseEntity
-{
-  public string Id { get; set; }
-  public IEnumerable<string> Names { get; set; }
-}
-```
-
-#### ChatRoomMessage
-
-```csharp
-public class ChatRoomMessage : BaseEntity
-{
-  public string From { get; set; }
-  public int Date { get; set; }
-  public string Message { get; set; }
-  public string RoomId { get; set; }
 }
 ```
 
@@ -226,22 +211,6 @@ public async Task SendMessage(UserDto user, ChatRoomMessage message)
   await PublishMessage("message", message);
 }
 ```
-
-### Session handling
-
-The chat server works as a basic _REST_ API which involves keeping the session and handling the user state in the chat rooms (besides the WebSocket/real-time part).
-
-When a WebSocket/real-time server is instantiated, which listens for the next events:
-
-**Connection**. A new user is connected. At this point, a user ID is captured and saved to the session (which is cached in Redis). Note, that session caching is language/library-specific and it's used here purely for persistence and maintaining the state between server reloads.
-
-A global set with `online_users` key is used for keeping the online state for each user. So on a new connection, a user ID is written to that set:
-
-**E.g.** `SADD online_users 1` (We add user with id 1 to the set **online_users**).
-
-After that, a message is broadcasted to the clients to notify them that a new user is joined the chat.
-
-**Disconnect**. It works similarly to the connection event, except we need to remove the user for **online_users** set and notify the clients: `SREM online_users 1` (makes user with id 1 offline).
 
 **Message**. A user sends a message, and it needs to be broadcasted to the other clients. The pub/sub allows us also to broadcast this message to all server instances which are connected to this Redis:
 
