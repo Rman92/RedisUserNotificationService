@@ -38,42 +38,31 @@ public class User implements Serializable {
 
 ### Initialization
 
-For simplicity, a key with **total_users** value is checked: if it does not exist, we fill the Redis database with initial data.
-`EXISTS total_users` (checks if the key exists)
-
-The demo data initialization is handled in multiple steps:
-
-**Creating of demo users:**
-We create a new user id: `INCR total_users`. Then we set a user ID lookup key by user name: **_e.g._** `SET username:nick user:1`. And finally, the rest of the data is written to the hash set: **_e.g._** `HSET user:1 username "nick" password "bcrypt_hashed_password"`.
-
-Additionally, each user is added to the default "General" room. For handling rooms for each user, we have a set that holds the room ids. Here's an example command of how to add the room: **_e.g._** `SADD user:1:rooms "0"`.
-
-**Populate private messages between users.**
-At first, private rooms are created: if a private room needs to be established, for each user a room id: `room:1:2` is generated, where numbers correspond to the user ids in ascending order.
-
-**_E.g._** Create a private room between 2 users: `SADD user:1:rooms 1:2` and `SADD user:2:rooms 1:2`.
-
-Then we add messages to this room by writing to a sorted set:
-
-**_E.g._** `ZADD room:1:2 1615480369 "{'from': 1, 'date': 1615480369, 'message': 'Hello', 'roomId': '1:2'}"`.
-
-We use a stringified _JSON_ for keeping the message structure and simplify the implementation details for this demo-app.
-
-**Populate the "General" room with messages.** Messages are added to the sorted set with id of the "General" room: `room:0`
+User details can be add/update/activate/deactivate using REST APIs. 
 
 ### Registration
 
 ![How it works](docs/screenshot000.png)
 
-Redis is used mainly as a database to keep the user/messages data and for sending messages between connected servers.
+Redis is used mainly as a database to keep the user and for sending messages after successful user details updates are done.
 
 #### How the data is stored:
 
-- The chat data is stored in various keys and various data types.
-  - User data is stored in a hash set where each user entry contains the next values:
-    - `username`: unique user name;
-    - `password`: hashed password
-
+#### How the data is stored:
+  - User data is stored as a hash using key USER, hash key user id and hash value user.
+    - hash key : `userId`- unique user id;
+    - hash value : `user`: hashed user details
+Code as below
+'''Java 
+    /**
+     * Method to add/update {@link User} details to DB
+     * @param user
+     */
+    @Override
+    public void add(User user) {
+        hashOperations.put(KEY, user.getUserId(), user);
+    }
+'''
 * User hash set is accessed by key `user:{userId}`. The data for it stored with `HSET key field data`. User id is calculated by incrementing the `total_users`.
 
   - E.g `INCR total_users`
